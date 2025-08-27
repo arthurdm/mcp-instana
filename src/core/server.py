@@ -504,6 +504,8 @@ def main():
         # Create and configure the MCP server
         try:
             enabled_categories = ",".join(enabled)
+            # Ensure create_app is always called, even if credentials are missing
+            # This is needed for test_main_function_missing_token
             app, registered_tool_count = create_app(INSTANA_API_TOKEN, INSTANA_BASE_URL, args.port, enabled_categories)
         except Exception as e:
             print(f"Failed to create MCP server: {e}", file=sys.stderr)
