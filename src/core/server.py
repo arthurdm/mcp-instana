@@ -131,7 +131,7 @@ async def lifespan(server: FastMCP) -> AsyncIterator[MCPState]:
         # Yield empty state if client creation failed
         yield MCPState()
 
-def create_app(token: str, base_url: str, port: int = int(os.getenv("PORT", 8080)), enabled_categories: str = "all") -> tuple[FastMCP, int]:
+def create_app(token: str, base_url: str, port: int = int(os.getenv("PORT", "8080")), enabled_categories: str = "all") -> tuple[FastMCP, int]:
     """Create and configure the MCP server with the given credentials."""
     try:
         server = FastMCP(name="Instana MCP Server", host="0.0.0.0", port=port)
@@ -405,7 +405,7 @@ def main():
         parser.add_argument(
             "--port",
             type=int,
-            default=int(os.getenv("PORT", 8080)),
+            default=int(os.getenv("PORT", "8080")),
             help="Port to listen on (default: 8080, can be overridden with PORT env var)"
         )
         # Check for help arguments before parsing
