@@ -520,4 +520,140 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
             return {
                 "error": f"Failed to get agent monitoring events: {e!s}"
             }
+    @register_as_tool
+    @with_header_auth(EventsApi)
+    async def get_events(self, 
+                         from_time: Optional[int] = None,
+                         to_time: Optional[int] = None,
+                         time_range: Optional[str] = None,
+                         size: Optional[int] = 100,
+                         ctx=None, api_client=None) -> Dict[str, Any]:
+        """
+        Get events from Instana.
+        
+        This tool retrieves events from Instana for the specified time range. You can specify a time range
+        using timestamps or natural language like "last 24 hours" or "last 2 days". If no parameters are provided,
+        it will return events from the last 24 hours.
+        
+        Args:
+            from_time: Start timestamp in milliseconds since epoch (optional)
+            to_time: End timestamp in milliseconds since epoch (optional)
+            time_range: Natural language time range like "last 24 hours", "last 2 days", "last week" (optional)
+            size: Maximum number of events to return (optional, default 100)
+            ctx: The MCP context (optional)
+            api_client: API client for testing (optional)
+            
+        Returns:
+            Dictionary containing events data or error information
+        """
+        try:
+            # Process natural language time range if provided
+            if time_range:
+                logger.debug(f"Processing natural language time range: '{time_range}'")
+                
+                # Current time in milliseconds
+                current_time_ms = int(datetime.now().timestamp() * 1000)
+                
+                # Default to 24 hours if just "last few hours" is specified
+                if time_range.lower() in ["last few hours", "last hours", "few hours"]:
+                    hours = 24
+                    from_time = current_time_ms - (hours * 60 * 60 * 1000)
+                    to_time = current_time_ms
+                    logger.debug(f"Interpreted as last {hours} hours")
+                # Extract hours if specified
+                elif "hour" in time_range.lower():
+                    import re
+                    hour_match = re.search(r'(\d+)\s*hour', time_range.lower())
+                    hours = int(hour_match.group(1)) if hour_match else 24
+                    from_time = current_time_ms - (hours * 60 * 60 * 1000)
+                    to_time = current_time_ms
+                # Extract days if specified
+                elif "day" in time_range.lower():
+                    import re
+                    day_match = re.search(r'(\d+)\s*day', time_range.lower())
+                    days = int(day_match.group(1)) if day_match else 1
+                    from_time = current_time_ms - (days * 24 * 60 * 60 * 1000)
+                    to_time = current_time_ms
+                # Handle "last week"
+                elif "week" in time_range.lower():
+                    import re
+                    week_match = re.search(r'(\d+)\s*week', time_range.lower())
+                    weeks = int(week_match.group(1)) if week_match else 1
+                    from_time = current_time_ms - (weeks * 7 * 24 * 60 * 60 * 1000)
+                    to_time = current_time_ms
+                # Handle "last month"
+                elif "month" in time_range.lower():
+                    import re
+                    month_match = re.search(r'(\d+)\s*month', time_range.lower())
+                    months = int(month_match.group(1)) if month_match else 1
+                    from_time = current_time_ms - (months * 30 * 24 * 60 * 60 * 1000)
+                    to_time = current_time_ms
+                # Default to 24 hours for any other time range
+                else:
+                    hours = 24
+                    from_time = current_time_ms - (hours * 60 * 60 * 1000)
+                    to_time = current_time_ms
+            
+            # Set default time range if not provided
+            if not to_time:
+                to_time = int(datetime.now().timestamp() * 1000)
+            if not from_time:
+                from_time = to_time - (24 * 60 * 60 * 1000)  # Default to 24 hours
+            
+            logger.debug(f"get_events called with from_time={from_time}, to_time={to_time}, size={size}")
+            
+            # Call the get_events method from the SDK
+            result = api_client.get_events(
+                to=to_time,
+                var_from=from_time,
+                window_size=None,
+                filter_event_updates=None,
+                exclude_triggered_before=None,
+                size=size
+            )
+            
+            # Print the raw result for debugging
+            logger.debug(f"Raw API result type: {type(result)}")
+            logger.debug(f"Raw API result length: {len(result) if isinstance(result, list) else 'not a list'}")
+            
+            # If there are no events, return early
+            if not result or (isinstance(result, list) and len(result) == 0):
+                from_date = datetime.fromtimestamp(from_time/1000).strftime('%Y-%m-%d %H:%M:%S')
+                to_date = datetime.fromtimestamp(to_time/1000).strftime('%Y-%m-%d %H:%M:%S')
+                return {
+                    "message": f"No events found between {from_date} and {to_date}.",
+                    "time_range": f"{from_date} to {to_date}",
+                    "events_count": 0
+                }
+            
+            # Process the events
+            events = result if isinstance(result, list) else [result]
+            
+            # Convert objects to dictionaries if needed
+            event_dicts = []
+            for event in events:
+                if hasattr(event, 'to_dict'):
+                    event_dicts.append(event.to_dict())
+                else:
+                    event_dicts.append(event)
+            
+            # Format the time range in a human-readable format
+            from_date = datetime.fromtimestamp(from_time/1000).strftime('%Y-%m-%d %H:%M:%S')
+            to_date = datetime.fromtimestamp(to_time/1000).strftime('%Y-%m-%d %H:%M:%S')
+            
+            # Create the response
+            response = {
+                "message": f"Retrieved {len(events)} events between {from_date} and {to_date}.",
+                "time_range": f"{from_date} to {to_date}",
+                "events_count": len(events),
+                "events": event_dicts
+            }
+            
+            return response
+            
+        except Exception as e:
+            logger.error(f"Error in get_events: {e}", exc_info=True)
+            return {
+                "error": f"Failed to get events: {e!s}"
+            }
 
