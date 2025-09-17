@@ -47,7 +47,7 @@
       - [**pyproject.toml** (Development)](#pyprojecttoml-development)
       - [**pyproject-runtime.toml** (Production)](#pyproject-runtimetoml-production)
     - [Building the Docker Image](#building-the-docker-image)
-      - [**Prerequisites**](#prerequisites)
+      - [**Prerequisites**](#prerequisites-1)
       - [**Build Command**](#build-command)
       - [**What the Build Does**](#what-the-build-does)
     - [Running the Docker Container](#running-the-docker-container)
@@ -232,7 +232,7 @@ uv run src/core/server.py [OPTIONS]
 - `--transport <mode>`: Transport mode (choices: `streamable-http`, `stdio`)
 - `--debug`: Enable debug mode with additional logging
 - `--log-level <level>`: Set the logging level (choices: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`)
-- `--tools <categories>`: Comma-separated list of tool categories to enable (e.g., infra,app,events). Enabling a category will also enable its related prompts. For example: `--tools infra` enables the infra tools and all infra-related prompts.
+- `--tools <categories>`: Comma-separated list of tool categories to enable (e.g., infra,app,events,automation,website). Enabling a category will also enable its related prompts. For example: `--tools infra` enables the infra tools and all infra-related prompts.
 - `--list-tools`: List all available tool categories and exit
 - `--port <port>`: Port to listen on (default: 8080)
 - `--help`: Show help message and exit
@@ -352,7 +352,9 @@ uv run src/core/server.py --transport streamable-http --tools events
 **Available Categories:**
 - **`infra`**: Infrastructure monitoring tools and prompts (resources, catalog, topology, analyze, metrics)
 - **`app`**: Application performance tools and prompts (resources, metrics, alerts, catalog, topology, analyze, settings, global alerts)
-- **`events`**: Event monitoring tools and prompts(Kubernetes events, agent monitoring)
+- **`events`**: Event monitoring tools and prompts (Kubernetes events, agent monitoring)
+- **`automation`**: Automation-related tools and prompts (action catalog, action history)
+- **`website`**: Website monitoring tools and prompts (metrics, catalog, analyze, configuration)
 
 ### Verifying Server Status
 
@@ -731,9 +733,21 @@ The MCP server supports selective tool loading to optimize performance and reduc
   - Application Catalog: Metadata and definitions
   - Application Topology: Service dependency mapping
   - Application Analyze: Application performance analysis
+  - Application Settings: Configuration management
+  - Application Global Alert: Global alert management
 
 - **`events`**: Event monitoring tools
   - Events: Kubernetes events, agent monitoring, incidents, issues, changes and system event tracking
+
+- **`automation`**: Automation-related tools
+  - Action Catalog: Automation action discovery and management
+  - Action History: Tracking and managing automation action history
+
+- **`website`**: Website monitoring tools
+  - Website Metrics: Performance measurement for websites
+  - Website Catalog: Website metadata and definitions
+  - Website Analyze: Website performance analysis
+  - Website Configuration: Website configuration management
 
 ### Usage Examples
 
@@ -745,6 +759,9 @@ mcp-instana --tools infra,events --transport streamable-http
 
 # Enable only application tools
 mcp-instana --tools app --transport streamable-http
+
+# Enable automation and website tools
+mcp-instana --tools automation,website --transport streamable-http
 
 # Enable all tools (default behavior)
 mcp-instana --transport streamable-http
@@ -761,6 +778,9 @@ uv run src/core/server.py --tools infra,events --transport streamable-http
 
 # Enable only application tools
 uv run src/core/server.py --tools app --transport streamable-http
+
+# Enable automation and website tools
+uv run src/core/server.py --tools automation,website --transport streamable-http
 
 # Enable all tools (default behavior)
 uv run src/core/server.py --transport streamable-http
