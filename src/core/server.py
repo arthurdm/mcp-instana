@@ -16,6 +16,7 @@ from typing import Any
 
 from dotenv import load_dotenv
 
+from src.automation import automated_investigation
 from src.prompts import PROMPT_REGISTRY
 
 load_dotenv()
@@ -78,6 +79,7 @@ class MCPState:
     app_analyze_client: Any = None
     app_settings_client: Any = None
     app_global_alert_client: Any = None
+    automated_investigation_client: Any = None
     website_metrics_client: Any = None
     website_catalog_client: Any = None
     website_analyze_client: Any = None
@@ -240,6 +242,9 @@ def get_client_categories():
         from src.application.application_topology import ApplicationTopologyMCPTools
         from src.automation.action_catalog import ActionCatalogMCPTools
         from src.automation.action_history import ActionHistoryMCPTools
+        from src.automation.automated_investigation import (
+            AutomatedInvestigationMCPTools,
+        )
         from src.event.events_tools import AgentMonitoringEventsMCPTools
         from src.infrastructure.infrastructure_analyze import (
             InfrastructureAnalyzeMCPTools,
@@ -286,6 +291,7 @@ def get_client_categories():
             ('events_client', AgentMonitoringEventsMCPTools),
         ],
         "automation": [
+            ('automated_investigation_client', AutomatedInvestigationMCPTools),
             ('action_catalog_client', ActionCatalogMCPTools),
             ('action_history_client', ActionHistoryMCPTools),
         ],
