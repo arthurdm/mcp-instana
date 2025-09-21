@@ -181,7 +181,7 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
 
             # Try standard API call first
             try:
-                result = api_client.get_event(event_id=event_id)
+                result = api_client.get_event_without_preload_content(event_id=event_id)
 
                 # New robust conversion to dict
                 if hasattr(result, "to_dict"):
@@ -582,7 +582,7 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
 
             # Call the get_events method from the SDK
             try:
-                result = api_client.get_events(
+                result = api_client.get_events_without_preload_content(
                     var_from=from_time,
                     to=to_time,
                     window_size=size,
@@ -624,13 +624,22 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
             event_dicts = []
             for event in events:
                 try:
-                    if hasattr(event, 'to_dict'):
+                    # Handle HTTPResponse objects
+                    if hasattr(event, 'data') and hasattr(event, 'status'):
+                        # This is likely an HTTPResponse object
+                        try:
+                            response_text = event.data.decode('utf-8')
+                            event_dict = json.loads(response_text)
+                        except (AttributeError, json.JSONDecodeError) as e:
+                            logger.error(f"Failed to parse HTTPResponse: {e}")
+                            event_dict = {"error": f"Failed to parse response: {e}"}
+                    elif hasattr(event, 'to_dict'):
                         event_dict = event.to_dict()
                     else:
                         event_dict = event
 
                     # Fix the metrics field to match the expected format
-                    if event_dict.get('metrics'):
+                    if isinstance(event_dict, dict) and event_dict.get('metrics'):
                         fixed_metrics = []
                         for metric in event_dict['metrics']:
                             fixed_metric = {}
@@ -735,7 +744,7 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
 
             # Call the get_events method from the SDK
             try:
-                result = api_client.get_events(
+                result = api_client.get_events_without_preload_content(
                     var_from=from_time,
                     to=to_time,
                     window_size=size,
@@ -777,13 +786,22 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
             event_dicts = []
             for event in events:
                 try:
-                    if hasattr(event, 'to_dict'):
+                    # Handle HTTPResponse objects
+                    if hasattr(event, 'data') and hasattr(event, 'status'):
+                        # This is likely an HTTPResponse object
+                        try:
+                            response_text = event.data.decode('utf-8')
+                            event_dict = json.loads(response_text)
+                        except (AttributeError, json.JSONDecodeError) as e:
+                            logger.error(f"Failed to parse HTTPResponse: {e}")
+                            event_dict = {"error": f"Failed to parse response: {e}"}
+                    elif hasattr(event, 'to_dict'):
                         event_dict = event.to_dict()
                     else:
                         event_dict = event
 
                     # Fix the metrics field to match the expected format
-                    if event_dict.get('metrics'):
+                    if isinstance(event_dict, dict) and event_dict.get('metrics'):
                         fixed_metrics = []
                         for metric in event_dict['metrics']:
                             fixed_metric = {}
@@ -888,7 +906,7 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
 
             # Call the get_events method from the SDK
             try:
-                result = api_client.get_events(
+                result = api_client.get_events_without_preload_content(
                     var_from=from_time,
                     to=to_time,
                     window_size=size,
@@ -930,13 +948,22 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
             event_dicts = []
             for event in events:
                 try:
-                    if hasattr(event, 'to_dict'):
+                    # Handle HTTPResponse objects
+                    if hasattr(event, 'data') and hasattr(event, 'status'):
+                        # This is likely an HTTPResponse object
+                        try:
+                            response_text = event.data.decode('utf-8')
+                            event_dict = json.loads(response_text)
+                        except (AttributeError, json.JSONDecodeError) as e:
+                            logger.error(f"Failed to parse HTTPResponse: {e}")
+                            event_dict = {"error": f"Failed to parse response: {e}"}
+                    elif hasattr(event, 'to_dict'):
                         event_dict = event.to_dict()
                     else:
                         event_dict = event
 
                     # Fix the metrics field to match the expected format
-                    if event_dict.get('metrics'):
+                    if isinstance(event_dict, dict) and event_dict.get('metrics'):
                         fixed_metrics = []
                         for metric in event_dict['metrics']:
                             fixed_metric = {}

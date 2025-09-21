@@ -57,4 +57,4 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
 
 # Run the server
 ENTRYPOINT ["python", "-m", "src.core.server"]
-CMD ["--transport", "streamable-http"]
+CMD ["--transport", "streamable-http", "--tools", "automation,events"]
