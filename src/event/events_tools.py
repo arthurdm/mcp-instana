@@ -134,10 +134,27 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
         # Group events by type
         event_types = {}
         for event in events:
-            event_type = event.get("eventType", "Unknown")
-            if event_type not in event_types:
-                event_types[event_type] = 0
-            event_types[event_type] += 1
+            # Handle case where event is a list instead of a dictionary
+            if isinstance(event, list):
+                # If event is a list, process each item in the list
+                for item in event:
+                    if isinstance(item, dict):
+                        event_type = item.get("eventType", "Unknown")
+                        if event_type not in event_types:
+                            event_types[event_type] = 0
+                        event_types[event_type] += 1
+            elif isinstance(event, dict):
+                # Normal case: event is a dictionary
+                event_type = event.get("eventType", "Unknown")
+                if event_type not in event_types:
+                    event_types[event_type] = 0
+                event_types[event_type] += 1
+            else:
+                # Handle any other type by using a generic type
+                event_type = f"Unknown-{type(event).__name__}"
+                if event_type not in event_types:
+                    event_types[event_type] = 0
+                event_types[event_type] += 1
 
         # Sort event types by count
         sorted_types = sorted(event_types.items(), key=lambda x: x[1], reverse=True)
