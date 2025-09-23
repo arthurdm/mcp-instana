@@ -200,14 +200,26 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
             try:
                 result = api_client.get_event_without_preload_content(event_id=event_id)
 
-                # New robust conversion to dict
-                if hasattr(result, "to_dict"):
+                # Handle HTTPResponse objects with headers that might contain HTTPHeaderDict
+                if hasattr(result, 'headers') and hasattr(result.headers, 'items'):
+                    # If it's an HTTP response with headers, extract the data and decode it
+                    if hasattr(result, 'data'):
+                        try:
+                            response_text = result.data.decode('utf-8')
+                            result_dict = json.loads(response_text)
+                        except (UnicodeDecodeError, json.JSONDecodeError):
+                            # If we can't decode or parse the data, create a simple dict
+                            result_dict = {"data": str(result.data)}
+                    else:
+                        result_dict = {"status": getattr(result, "status", None)}
+                # Standard object conversion
+                elif hasattr(result, "to_dict"):
                     result_dict = result.to_dict()
                 elif isinstance(result, dict):
                     result_dict = result
                 else:
-                    # Convert to dictionary using __dict__ or as a fallback, create a new dict with string representation
-                    result_dict = getattr(result, "__dict__", {"data": str(result)})
+                    # Create a new dict with string representation, avoiding __dict__ which might contain non-serializable objects
+                    result_dict = {"data": str(result)}
 
                 logger.debug(f"Successfully retrieved event with ID {event_id}")
                 return result_dict
@@ -233,7 +245,7 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
                         logger.error(error_message)
                         return {"error": error_message, "event_id": event_id}
 
-                    # Read the response content
+                    # Read the response content, ensuring we don't include headers in the result
                     response_text = response_data.data.decode('utf-8')
 
                     # Parse the JSON manually
