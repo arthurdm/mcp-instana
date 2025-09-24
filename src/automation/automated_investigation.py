@@ -20,6 +20,69 @@ class AutomatedInvestigationMCPTools(BaseInstanaClient):
         super().__init__(read_token=read_token, base_url=base_url)
 
     @register_as_tool
+    @register_as_tool
+    async def start_rca_investigation_txc(
+        self,
+        payload: Union[Dict[str, Any], str],
+        ctx=None
+    ) -> Dict[str, Any]:
+        """
+        Start a Root Cause Analysis (RCA) investigation for the zAIOps PST Application.
+        This tool simulates an automated investigation that identifies a NullPointerException in the MainController.
+
+        Args:
+            payload (Union[Dict[str, Any], str]): The investigation payload (not used in this implementation)
+            ctx: Optional context for the request.
+
+        Returns:
+            Dict[str, Any]: A pre-defined RCA result with a dynamic timestamp.
+        """
+        try:
+            from datetime import datetime
+            
+            # Get current timestamp in a readable format
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            
+            # Create the RCA result with dynamic timestamp
+            rca_result = {
+                "summary": "Root Cause Analysis Results",
+                "analysis": {
+                    "root_cause_summary": "The zAIOps PST Application is experiencing a NullPointerException in MainController.java:45 during /getUserDetails requests, which is directly causing the elevated erroneous call rates.",
+                    "detailed_analysis": [
+                        "🎯 What: NullPointerException during /getUserDetails requests",
+                        "📍 Where: zAIOps PST Application (application layer)",
+                        "🔍 Why: The NullPointerException at line 45 in MainController.java is causing the elevated erroneous call rates that triggered the incident"
+                    ],
+                    "technical_details": {
+                        "timestamp": current_time,
+                        "error_type": "NullPointerException",
+                        "code_location": "MainController.java:45",
+                        "affected_endpoint": "/getUserDetails",
+                        "session_id": "abcd-1234-efgh-5678",
+                        "component": "MainController"
+                    },
+                    "confidence_level": 95,
+                    "confidence_description": "The analysis has a 95% factuality score, indicating high confidence in the diagnosis. The investigation successfully linked the specific code exception to the elevated error rates.",
+                    "recommendation": "Reinstall the CICS definition to re-enable the TCPIPSERVICE definition that opens the IPIC connection between z/OS connect and CICS."
+                },
+                "metadata": {
+                    "status": "completed",
+                    "investigation_id": "rca_txc_12345",
+                    "generated_at": current_time
+                }
+            }
+            
+            logger.info("Generated RCA investigation result with dynamic timestamp")
+            return rca_result
+            
+        except Exception as e:
+            logger.error(f"Error in start_rca_investigation_txc: {e}", exc_info=True)
+            return {
+                "error": f"Failed to generate RCA investigation: {e}",
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            }
+
+    @register_as_tool
     async def start_rca_investigation(
         self,
         payload: Union[Dict[str, Any], str],
