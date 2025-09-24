@@ -311,6 +311,20 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
                 )
                 logger.debug(f"Raw API result type: {type(result)}")
                 logger.debug(f"Raw API result length: {len(result) if isinstance(result, list) else 'not a list'}")
+                
+                # Handle HTTPResponse objects with headers that might contain HTTPHeaderDict
+                if hasattr(result, 'headers') and hasattr(result.headers, 'items'):
+                    # If it's an HTTP response with headers, extract the data and decode it
+                    if hasattr(result, 'data'):
+                        try:
+                            response_text = result.data.decode('utf-8')
+                            result = json.loads(response_text)
+                        except (UnicodeDecodeError, json.JSONDecodeError) as e:
+                            logger.error(f"Failed to decode response: {e}")
+                            return {
+                                "error": f"Failed to decode response: {e}",
+                                "details": str(e)
+                            }
             except Exception as api_error:
                 logger.error(f"API call failed: {api_error}", exc_info=True)
                 return {
@@ -462,6 +476,20 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
                 )
                 logger.debug(f"Raw API result type: {type(result)}")
                 logger.debug(f"Raw API result length: {len(result) if isinstance(result, list) else 'not a list'}")
+                
+                # Handle HTTPResponse objects with headers that might contain HTTPHeaderDict
+                if hasattr(result, 'headers') and hasattr(result.headers, 'items'):
+                    # If it's an HTTP response with headers, extract the data and decode it
+                    if hasattr(result, 'data'):
+                        try:
+                            response_text = result.data.decode('utf-8')
+                            result = json.loads(response_text)
+                        except (UnicodeDecodeError, json.JSONDecodeError) as e:
+                            logger.error(f"Failed to decode response: {e}")
+                            return {
+                                "error": f"Failed to get agent monitoring events: {e}",
+                                "details": str(e)
+                            }
             except Exception as api_error:
                 logger.error(f"API call failed: {api_error}", exc_info=True)
                 return {
@@ -620,6 +648,20 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
                     event_type_filters=event_type_filters
                 )
                 logger.debug("Successfully retrieved issue events using standard API call")
+                
+                # Handle HTTPResponse objects with headers that might contain HTTPHeaderDict
+                if hasattr(result, 'headers') and hasattr(result.headers, 'items'):
+                    # If it's an HTTP response with headers, extract the data and decode it
+                    if hasattr(result, 'data'):
+                        try:
+                            response_text = result.data.decode('utf-8')
+                            result = json.loads(response_text)
+                        except (UnicodeDecodeError, json.JSONDecodeError) as e:
+                            logger.error(f"Failed to decode response: {e}")
+                            return {
+                                "error": f"Failed to retrieve issue events: {e}",
+                                "time_range": f"{from_date} to {to_date}"
+                            }
 
             except Exception as api_error:
                 logger.error(f"Failed to retrieve issue events: {api_error}", exc_info=True)
@@ -782,6 +824,20 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
                     event_type_filters=event_type_filters
                 )
                 logger.debug("Successfully retrieved incident events using standard API call")
+                
+                # Handle HTTPResponse objects with headers that might contain HTTPHeaderDict
+                if hasattr(result, 'headers') and hasattr(result.headers, 'items'):
+                    # If it's an HTTP response with headers, extract the data and decode it
+                    if hasattr(result, 'data'):
+                        try:
+                            response_text = result.data.decode('utf-8')
+                            result = json.loads(response_text)
+                        except (UnicodeDecodeError, json.JSONDecodeError) as e:
+                            logger.error(f"Failed to decode response: {e}")
+                            return {
+                                "error": f"Failed to retrieve incident events: {e}",
+                                "time_range": f"{from_date} to {to_date}"
+                            }
 
             except Exception as api_error:
                 logger.error(f"Failed to retrieve incident events: {api_error}", exc_info=True)
@@ -944,6 +1000,20 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
                     event_type_filters=event_type_filters
                 )
                 logger.debug("Successfully retrieved change events using standard API call")
+                
+                # Handle HTTPResponse objects with headers that might contain HTTPHeaderDict
+                if hasattr(result, 'headers') and hasattr(result.headers, 'items'):
+                    # If it's an HTTP response with headers, extract the data and decode it
+                    if hasattr(result, 'data'):
+                        try:
+                            response_text = result.data.decode('utf-8')
+                            result = json.loads(response_text)
+                        except (UnicodeDecodeError, json.JSONDecodeError) as e:
+                            logger.error(f"Failed to decode response: {e}")
+                            return {
+                                "error": f"Failed to retrieve change events: {e}",
+                                "time_range": f"{from_date} to {to_date}"
+                            }
 
             except Exception as api_error:
                 logger.error(f"Failed to retrieve change events: {api_error}", exc_info=True)
@@ -1089,10 +1159,34 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
             try:
                 logger.debug("Retrieving events using batch API")
                 events_result = api_client.get_events_by_ids(request_body=event_ids)
+                
+                # Handle HTTPResponse objects with headers that might contain HTTPHeaderDict
+                if hasattr(events_result, 'headers') and hasattr(events_result.headers, 'items'):
+                    # If it's an HTTP response with headers, extract the data and decode it
+                    if hasattr(events_result, 'data'):
+                        try:
+                            response_text = events_result.data.decode('utf-8')
+                            events_result = json.loads(response_text)
+                        except (UnicodeDecodeError, json.JSONDecodeError) as e:
+                            logger.error(f"Failed to decode response: {e}")
+                            return {
+                                "error": f"Failed to get events by IDs: {e}",
+                                "details": str(e)
+                            }
 
                 all_events = []
                 for event in events_result:
-                    if hasattr(event, 'to_dict'):
+                    # Handle HTTPResponse objects for individual events
+                    if hasattr(event, 'headers') and hasattr(event.headers, 'items'):
+                        if hasattr(event, 'data'):
+                            try:
+                                response_text = event.data.decode('utf-8')
+                                event_dict = json.loads(response_text)
+                            except (UnicodeDecodeError, json.JSONDecodeError):
+                                event_dict = {"data": str(event.data)}
+                        else:
+                            event_dict = {"status": getattr(event, "status", None)}
+                    elif hasattr(event, 'to_dict'):
                         event_dict = event.to_dict()
                     else:
                         event_dict = event
@@ -1118,8 +1212,35 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
                     try:
                         logger.debug(f"Retrieving event ID: {event_id}")
                         event = api_client.get_events_by_ids(request_body=[event_id])
+                        
+                        # Handle HTTPResponse objects with headers that might contain HTTPHeaderDict
+                        if hasattr(event, 'headers') and hasattr(event.headers, 'items'):
+                            # If it's an HTTP response with headers, extract the data and decode it
+                            if hasattr(event, 'data'):
+                                try:
+                                    response_text = event.data.decode('utf-8')
+                                    event = json.loads(response_text)
+                                except (UnicodeDecodeError, json.JSONDecodeError) as e:
+                                    logger.error(f"Failed to decode response for event ID {event_id}: {e}")
+                                    all_events.append({"eventId": event_id, "error": f"Failed to decode: {e}"})
+                                    continue
+                        
                         if isinstance(event, list) and event:
-                            event_dict = event[0].to_dict() if hasattr(event[0], 'to_dict') else event[0]
+                            # Handle HTTPResponse objects for individual events in the list
+                            if hasattr(event[0], 'headers') and hasattr(event[0].headers, 'items'):
+                                if hasattr(event[0], 'data'):
+                                    try:
+                                        response_text = event[0].data.decode('utf-8')
+                                        event_dict = json.loads(response_text)
+                                    except (UnicodeDecodeError, json.JSONDecodeError) as e:
+                                        logger.error(f"Failed to decode event data for event ID {event_id}: {e}")
+                                        event_dict = {"eventId": event_id, "error": f"Failed to decode: {e}"}
+                                else:
+                                    event_dict = {"eventId": event_id, "status": getattr(event[0], "status", None)}
+                            elif hasattr(event[0], 'to_dict'):
+                                event_dict = event[0].to_dict()
+                            else:
+                                event_dict = event[0]
                             all_events.append(event_dict)
                         else:
                             all_events.append({"eventId": event_id, "error": "Not found"})
