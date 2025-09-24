@@ -336,10 +336,30 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
             events = events[:max_events]
             event_dicts = []
             for event in events:
-                if hasattr(event, 'to_dict'):
-                    event_dicts.append(event.to_dict())
-                else:
-                    event_dicts.append(event)
+                try:
+                    if hasattr(event, 'to_dict'):
+                        try:
+                            event_dict = event.to_dict()
+                        except Exception as to_dict_error:
+                            # If to_dict fails due to validation errors, create a simple dict with available data
+                            logger.error(f"to_dict failed in get_kubernetes_info_events: {to_dict_error}")
+                            # Extract basic information from the event
+                            event_dict = {
+                                "eventId": getattr(event, "eventId", "unknown"),
+                                "problem": getattr(event, "problem", "Unknown"),
+                                "entityLabel": getattr(event, "entityLabel", ""),
+                                "detail": getattr(event, "detail", ""),
+                                "fixSuggestion": getattr(event, "fixSuggestion", ""),
+                                "start": getattr(event, "start", 0),
+                                "error": f"Validation error: {to_dict_error}"
+                            }
+                    else:
+                        event_dict = event
+                    event_dicts.append(event_dict)
+                except Exception as e:
+                    logger.error(f"Error processing event in get_kubernetes_info_events: {e}")
+                    # Add a simplified version of the event to avoid losing data
+                    event_dicts.append({"eventId": getattr(event, "eventId", "unknown"), "error": f"Failed to process: {e!s}"})
             if not event_dicts:
                 return {
                     "events": [],
@@ -501,10 +521,31 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
             events = events[:max_events]
             event_dicts = []
             for event in events:
-                if hasattr(event, 'to_dict'):
-                    event_dicts.append(event.to_dict())
-                else:
-                    event_dicts.append(event)
+                try:
+                    if hasattr(event, 'to_dict'):
+                        try:
+                            event_dict = event.to_dict()
+                        except Exception as to_dict_error:
+                            # If to_dict fails due to validation errors, create a simple dict with available data
+                            logger.error(f"to_dict failed in get_agent_monitoring_events: {to_dict_error}")
+                            # Extract basic information from the event
+                            event_dict = {
+                                "eventId": getattr(event, "eventId", "unknown"),
+                                "problem": getattr(event, "problem", "Unknown"),
+                                "entityName": getattr(event, "entityName", "Unknown"),
+                                "entityLabel": getattr(event, "entityLabel", "Unknown"),
+                                "entityType": getattr(event, "entityType", "Unknown"),
+                                "severity": getattr(event, "severity", 0),
+                                "start": getattr(event, "start", 0),
+                                "error": f"Validation error: {to_dict_error}"
+                            }
+                    else:
+                        event_dict = event
+                    event_dicts.append(event_dict)
+                except Exception as e:
+                    logger.error(f"Error processing event in get_agent_monitoring_events: {e}")
+                    # Add a simplified version of the event to avoid losing data
+                    event_dicts.append({"eventId": getattr(event, "eventId", "unknown"), "error": f"Failed to process: {e!s}"})
             if not event_dicts:
                 return {
                     "events": [],
@@ -705,7 +746,21 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
                             logger.error(f"Failed to parse HTTPResponse: {e}")
                             event_dict = {"error": f"Failed to parse response: {e}"}
                     elif hasattr(event, 'to_dict'):
-                        event_dict = event.to_dict()
+                        try:
+                            event_dict = event.to_dict()
+                        except Exception as to_dict_error:
+                            # If to_dict fails due to validation errors, create a simple dict with available data
+                            logger.error(f"to_dict failed in get_issues: {to_dict_error}")
+                            # Extract basic information from the event
+                            event_dict = {
+                                "eventId": getattr(event, "eventId", "unknown"),
+                                "problem": getattr(event, "problem", "Unknown"),
+                                "entityName": getattr(event, "entityName", ""),
+                                "entityLabel": getattr(event, "entityLabel", ""),
+                                "severity": getattr(event, "severity", 0),
+                                "start": getattr(event, "start", 0),
+                                "error": f"Validation error: {to_dict_error}"
+                            }
                     else:
                         event_dict = event
 
@@ -881,7 +936,21 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
                             logger.error(f"Failed to parse HTTPResponse: {e}")
                             event_dict = {"error": f"Failed to parse response: {e}"}
                     elif hasattr(event, 'to_dict'):
-                        event_dict = event.to_dict()
+                        try:
+                            event_dict = event.to_dict()
+                        except Exception as to_dict_error:
+                            # If to_dict fails due to validation errors, create a simple dict with available data
+                            logger.error(f"to_dict failed in get_incidents: {to_dict_error}")
+                            # Extract basic information from the event
+                            event_dict = {
+                                "eventId": getattr(event, "eventId", "unknown"),
+                                "problem": getattr(event, "problem", "Unknown"),
+                                "entityName": getattr(event, "entityName", ""),
+                                "entityLabel": getattr(event, "entityLabel", ""),
+                                "severity": getattr(event, "severity", 0),
+                                "start": getattr(event, "start", 0),
+                                "error": f"Validation error: {to_dict_error}"
+                            }
                     else:
                         event_dict = event
 
@@ -1057,7 +1126,21 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
                             logger.error(f"Failed to parse HTTPResponse: {e}")
                             event_dict = {"error": f"Failed to parse response: {e}"}
                     elif hasattr(event, 'to_dict'):
-                        event_dict = event.to_dict()
+                        try:
+                            event_dict = event.to_dict()
+                        except Exception as to_dict_error:
+                            # If to_dict fails due to validation errors, create a simple dict with available data
+                            logger.error(f"to_dict failed in get_changes: {to_dict_error}")
+                            # Extract basic information from the event
+                            event_dict = {
+                                "eventId": getattr(event, "eventId", "unknown"),
+                                "problem": getattr(event, "problem", "Unknown"),
+                                "entityName": getattr(event, "entityName", ""),
+                                "entityLabel": getattr(event, "entityLabel", ""),
+                                "severity": getattr(event, "severity", 0),
+                                "start": getattr(event, "start", 0),
+                                "error": f"Validation error: {to_dict_error}"
+                            }
                     else:
                         event_dict = event
 
@@ -1211,37 +1294,74 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
                 for event_id in event_ids:
                     try:
                         logger.debug(f"Retrieving event ID: {event_id}")
-                        event = api_client.get_events_by_ids(request_body=[event_id])
-                        
-                        # Handle HTTPResponse objects with headers that might contain HTTPHeaderDict
-                        if hasattr(event, 'headers') and hasattr(event.headers, 'items'):
-                            # If it's an HTTP response with headers, extract the data and decode it
-                            if hasattr(event, 'data'):
-                                try:
-                                    response_text = event.data.decode('utf-8')
-                                    event = json.loads(response_text)
-                                except (UnicodeDecodeError, json.JSONDecodeError) as e:
-                                    logger.error(f"Failed to decode response for event ID {event_id}: {e}")
-                                    all_events.append({"eventId": event_id, "error": f"Failed to decode: {e}"})
-                                    continue
-                        
-                        if isinstance(event, list) and event:
-                            # Handle HTTPResponse objects for individual events in the list
-                            if hasattr(event[0], 'headers') and hasattr(event[0].headers, 'items'):
-                                if hasattr(event[0], 'data'):
+                        # Use get_event method instead of get_events_by_ids for individual events
+                        # This avoids the Pydantic validation errors
+                        try:
+                            # Try to use the get_event method directly
+                            event_result = api_client.get_event_without_preload_content(event_id=event_id)
+                            
+                            # Handle HTTPResponse objects with headers that might contain HTTPHeaderDict
+                            if hasattr(event_result, 'headers') and hasattr(event_result.headers, 'items'):
+                                # If it's an HTTP response with headers, extract the data and decode it
+                                if hasattr(event_result, 'data'):
                                     try:
-                                        response_text = event[0].data.decode('utf-8')
+                                        response_text = event_result.data.decode('utf-8')
                                         event_dict = json.loads(response_text)
                                     except (UnicodeDecodeError, json.JSONDecodeError) as e:
-                                        logger.error(f"Failed to decode event data for event ID {event_id}: {e}")
-                                        event_dict = {"eventId": event_id, "error": f"Failed to decode: {e}"}
+                                        logger.error(f"Failed to decode response for event ID {event_id}: {e}")
+                                        all_events.append({"eventId": event_id, "error": f"Failed to decode: {e}"})
+                                        continue
                                 else:
-                                    event_dict = {"eventId": event_id, "status": getattr(event[0], "status", None)}
-                            elif hasattr(event[0], 'to_dict'):
-                                event_dict = event[0].to_dict()
+                                    event_dict = {"eventId": event_id, "status": getattr(event_result, "status", None)}
+                            elif hasattr(event_result, 'to_dict'):
+                                event_dict = event_result.to_dict()
                             else:
-                                event_dict = event[0]
+                                event_dict = event_result
+                                
                             all_events.append(event_dict)
+                            
+                        except Exception as get_event_error:
+                            logger.warning(f"get_event failed for {event_id}: {get_event_error}. Trying alternative approach.")
+                            
+                            # If get_event fails, try the original approach but with better error handling
+                            event = api_client.get_events_by_ids(request_body=[event_id])
+                            
+                            # Handle HTTPResponse objects with headers that might contain HTTPHeaderDict
+                            if hasattr(event, 'headers') and hasattr(event.headers, 'items'):
+                                # If it's an HTTP response with headers, extract the data and decode it
+                                if hasattr(event, 'data'):
+                                    try:
+                                        response_text = event.data.decode('utf-8')
+                                        event = json.loads(response_text)
+                                    except (UnicodeDecodeError, json.JSONDecodeError) as e:
+                                        logger.error(f"Failed to decode response for event ID {event_id}: {e}")
+                                        all_events.append({"eventId": event_id, "error": f"Failed to decode: {e}"})
+                                        continue
+                            
+                            if isinstance(event, list) and event:
+                                # Handle HTTPResponse objects for individual events in the list
+                                if hasattr(event[0], 'headers') and hasattr(event[0].headers, 'items'):
+                                    if hasattr(event[0], 'data'):
+                                        try:
+                                            response_text = event[0].data.decode('utf-8')
+                                            event_dict = json.loads(response_text)
+                                        except (UnicodeDecodeError, json.JSONDecodeError) as e:
+                                            logger.error(f"Failed to decode event data for event ID {event_id}: {e}")
+                                            event_dict = {"eventId": event_id, "error": f"Failed to decode: {e}"}
+                                    else:
+                                        event_dict = {"eventId": event_id, "status": getattr(event[0], "status", None)}
+                                elif hasattr(event[0], 'to_dict'):
+                                    try:
+                                        event_dict = event[0].to_dict()
+                                    except Exception as to_dict_error:
+                                        # If to_dict fails due to validation errors, create a simple dict with available data
+                                        logger.error(f"to_dict failed for event ID {event_id}: {to_dict_error}")
+                                        event_dict = {"eventId": event_id, "raw_data": str(event[0])}
+                                else:
+                                    event_dict = event[0]
+                                all_events.append(event_dict)
+                            else:
+                                all_events.append({"eventId": event_id, "error": "Event not found or invalid format"})
                         else:
                             all_events.append({"eventId": event_id, "error": "Not found"})
                     except Exception as e:
