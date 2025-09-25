@@ -1008,10 +1008,6 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
                     "database_impact": {"PROD_DB2_INSTANCE": 1}
                 },
                 "time_range": f"{current_time} (static sample data)",
-                "metadata": {
-                    "generated_at": current_time,
-                    "note": "This is a sample DB2 event for demonstration purposes"
-                }
             }
             
         except Exception as e:
