@@ -1006,8 +1006,7 @@ class AgentMonitoringEventsMCPTools(BaseInstanaClient):
                     "top_event_types": [["DB2_WORKLOAD_WAIT_TIME", 1]],
                     "severity_distribution": {"WARNING": 1},
                     "database_impact": {"PROD_DB2_INSTANCE": 1}
-                },
-                "time_range": f"{current_time} (static sample data)",
+                }
             }
             
         except Exception as e:
