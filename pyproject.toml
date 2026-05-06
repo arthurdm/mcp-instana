@@ -7,12 +7,9 @@ name = "mcp-instana"
 version = "0.9.7"
 description = "MCP server for Instana"
 authors = [
-    {name = "Elina Priyadarshinee", email = "Elina.priyadarshinee1@ibm.com"},
-    {name = "Guangya Liu", email = "gyliu@ibm.com"},
-    {name = "Isabell Sippli", email = "ischwert@de.ibm.com"},
     {name = "Jay Sharma", email = "Jay.Sharma3@ibm.com"},
-    {name = "Madhu Tadiparthi", email = "madhu.tadiparthi@ibm.com"},
-    {name = "Riya Kumari", email = "Riya.Kumari3@ibm.com"}
+    {name = "Riya Kumari", email = "Riya.Kumari3@ibm.com"},
+    {name = "Niyatha V S", email = "Niyatha.V.S1@ibm.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.10,<3.13"

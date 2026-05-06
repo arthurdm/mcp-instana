@@ -518,17 +518,11 @@ plugin catalog, ensuring compatibility with all monitored technologies without m
 
             logger.info(f"Pagination: pageSize={page_size}, offset={offset}")
 
-        # Build pagination object - different types for grouped vs non-grouped queries
-        if group_by and len(group_by) > 0:
-            # For grouped queries, use CursorPaginationWithUiCursorInfraExploreCursor
-            if offset is not None and offset > 0:
-                cursor_pagination = CursorPaginationWithUiCursorInfraExploreCursor(retrievalSize=page_size, offset=offset)
-            else:
-                cursor_pagination = CursorPaginationWithUiCursorInfraExploreCursor(retrievalSize=page_size)
-        elif offset is not None and offset > 0:
-            cursor_pagination = CursorPagination(retrievalSize=page_size, offset=offset)
+        # Build pagination object - both query types use CursorPaginationWithUiCursorInfraExploreCursor
+        if offset is not None and offset > 0:
+            cursor_pagination = CursorPaginationWithUiCursorInfraExploreCursor(retrievalSize=page_size, offset=offset)
         else:
-            cursor_pagination = CursorPagination(retrievalSize=page_size)
+            cursor_pagination = CursorPaginationWithUiCursorInfraExploreCursor(retrievalSize=page_size)
 
         # Build TimeFrame object - supports both relative and absolute time ranges
         if to_timestamp is not None:
