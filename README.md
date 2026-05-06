@@ -50,8 +50,7 @@
     - [Benefits of Tool Filtering](#benefits-of-tool-filtering)
   - [Docker Deployment](#docker-deployment)
     - [Docker Architecture](#docker-architecture)
-      - [**pyproject.toml** (Development)](#pyprojecttoml-development)
-      - [**pyproject-runtime.toml** (Production)](#pyproject-runtimetoml-production)
+      - [**pyproject.toml**](#pyprojecttoml)
     - [Building the Docker Image](#building-the-docker-image)
       - [**Prerequisites**](#prerequisites)
       - [**Build Command**](#build-command)
@@ -1063,17 +1062,11 @@ The MCP Instana server can be deployed using Docker for production environments.
 
 The project uses a **two-file dependency management strategy**:
 
-#### **pyproject.toml** (Development)
-- **Purpose**: Full development environment with all tools
-- **Dependencies**: 20 essential + 8 development dependencies (pytest, ruff, coverage, etc.)
-- **Usage**: Local development, testing, and CI/CD
-- **Size**: Larger but includes all development tools
-
-#### **pyproject-runtime.toml** (Production)
-- **Purpose**: Minimal production runtime dependencies only
-- **Dependencies**: 20 essential dependencies only
-- **Usage**: Docker production builds
-- **Size**: Optimized for minimal image size and security
+#### **pyproject.toml**
+- **Purpose**: Unified configuration for both development and production
+- **Dependencies**: All essential dependencies with optional development dependencies
+- **Usage**: Local development, testing, CI/CD, and Docker production builds
+- **Benefits**: Single source of truth for all dependencies, simplified maintenance
 
 ### Building the Docker Image
 
