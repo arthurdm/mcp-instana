@@ -146,7 +146,7 @@ ANALYZE (resource_type="analyze"):
     Pagination example (for next page):
     params={"payload": {"timeFrame": {"windowSize": 3600000, "to": 1710658800000}, "pagination": {"retrievalSize": 200, "ingestionTime": 1725519793, "offset": 199}}}
 
-    Note: Trace data saved to /tmp/instana_traces_{timestamp}.jsonl. Returns filePath, itemCount, fileSizeBytes, canLoadMore, totalHits, and cursor (ingestionTime, offset) if more data available. Use cursor values in pagination for next page.
+    Returns: items (array of trace records), itemCount, canLoadMore, totalHits, and cursor (ingestionTime, offset) if more data available. Use cursor values in pagination for next page.
 
     get_trace_details:
     params: {id, retrievalSize, offset, ingestionTime}
@@ -168,7 +168,7 @@ ANALYZE (resource_type="analyze"):
     Pagination example:
     params={"id": "trace-id-123", "retrievalSize": 100, "ingestionTime": 1725519793, "offset": 99}
 
-    Note: Trace details saved to /tmp/instana_trace_details_{id}_{timestamp}.jsonl. Returns filePath, itemCount, fileSizeBytes, canLoadMore, and cursor (ingestionTime, offset) if more data available.
+    Returns: items (array of trace detail records), itemCount, canLoadMore, and cursor (ingestionTime, offset) if more data available.
 
 Args:
     resource_type: "metrics", "alert_config", "global_alert_config", "settings", "catalog", or "analyze"
