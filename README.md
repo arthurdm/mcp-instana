@@ -443,15 +443,18 @@ uv sync
 
 ## Setup and Usage
 
-### Claude Desktop
+### Bob IDE
 
-Claude Desktop supports both Streamable HTTP and Stdio modes for MCP integration.
+Bob is IBM's AI-powered IDE that natively supports MCP integration. Bob provides a seamless development experience with built-in AI assistance and observability tools.
 
-Configure Claude Desktop by editing the configuration file:
+Configure Bob by editing the configuration file:
 
 **File Locations:**
-- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+- **macOS**: `~/Library/Application Support/Bob/bob_config.json`
+- **Windows**: `%APPDATA%\Bob\bob_config.json`
+- **Linux**: `~/.config/Bob/bob_config.json`
+
+For more information about Bob, visit: https://bob.ibm.com/
 
 #### Streamable HTTP Mode
 
@@ -459,13 +462,15 @@ The Streamable HTTP mode provides a REST API interface for MCP communication usi
 
 **Step 1: Start the MCP Server in Streamable HTTP Mode**
 
-Before configuring Claude Desktop, you need to start the MCP server in Streamable HTTP mode. Please refer to the [Starting the Local MCP Server](#starting-the-local-mcp-server) section for detailed instructions.
+Before configuring Bob, you need to start the MCP server in Streamable HTTP mode. Please refer to the [Starting the Local MCP Server](#starting-the-local-mcp-server) section for detailed instructions.
 
-**Step 2: Configure Claude Desktop**
+**Step 2: Configure Bob**
 
-Configure Claude Desktop to pass Instana credentials via headers:
+**Local Configuration:**
 
-```json:claude_desktop_config.json
+Configure Bob to connect to your local Instana MCP server:
+
+```json
 {
   "mcpServers": {
     "Instana MCP Server": {
@@ -481,21 +486,38 @@ Configure Claude Desktop to pass Instana credentials via headers:
 }
 ```
 
+**Remote Configuration:**
+
+Configure Bob to connect to a remote Instana MCP server (e.g., deployed on IBM Code Engine):
+
+```json
+{
+  "mcpServers": {
+    "Instana MCP Server": {
+      "command": "npx",
+      "args": [
+        "mcp-remote", "https://app-instana-750.1zetetanw8ul.us-east.codeengine.appdomain.cloud/mcp/",
+        "--allow-http",
+        "--header", "instana-base-url: https://your-instana-instance.instana.io",
+        "--header", "instana-api-token: your_instana_api_token"
+      ]
+    }
+  }
+}
+```
+
 **Note:** To use npx, we recommend first installing NVM (Node Version Manager), then using it to install Node.js.
 Installation instructions are available at: https://nodejs.org/en/download
 
 **Step 3: Test the Connection**
 
-Restart Claude Desktop. You should now see Instana MCP Server in the Claude Desktop interface as shown below:
+Restart Bob IDE. You should now see Instana MCP Server available in the Bob interface.
 
-![](./images/claudeTools.png)
-
-You can now run queries in Claude Desktop:
+You can now run queries in Bob:
 
 ```
 get me all endpoints from Instana
 ```
-![](./images/claudeResponse.png)
 
 #### Stdio Mode
 
@@ -577,18 +599,15 @@ get me all endpoints from Instana
 }
 ```
 
-### Bob IDE
+### Claude Desktop
 
-Bob is IBM's AI-powered IDE that natively supports MCP integration. Bob provides a seamless development experience with built-in AI assistance and observability tools.
+Claude Desktop supports both Streamable HTTP and Stdio modes for MCP integration.
 
-Configure Bob by editing the configuration file:
+Configure Claude Desktop by editing the configuration file:
 
 **File Locations:**
-- **macOS**: `~/Library/Application Support/Bob/bob_config.json`
-- **Windows**: `%APPDATA%\Bob\bob_config.json`
-- **Linux**: `~/.config/Bob/bob_config.json`
-
-For more information about Bob, visit: https://bob.ibm.com/
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
 #### Streamable HTTP Mode
 
@@ -596,15 +615,13 @@ The Streamable HTTP mode provides a REST API interface for MCP communication usi
 
 **Step 1: Start the MCP Server in Streamable HTTP Mode**
 
-Before configuring Bob, you need to start the MCP server in Streamable HTTP mode. Please refer to the [Starting the Local MCP Server](#starting-the-local-mcp-server) section for detailed instructions.
+Before configuring Claude Desktop, you need to start the MCP server in Streamable HTTP mode. Please refer to the [Starting the Local MCP Server](#starting-the-local-mcp-server) section for detailed instructions.
 
-**Step 2: Configure Bob**
+**Step 2: Configure Claude Desktop**
 
-**Local Configuration:**
+Configure Claude Desktop to pass Instana credentials via headers:
 
-Configure Bob to connect to your local Instana MCP server:
-
-```json
+```json:claude_desktop_config.json
 {
   "mcpServers": {
     "Instana MCP Server": {
@@ -620,38 +637,21 @@ Configure Bob to connect to your local Instana MCP server:
 }
 ```
 
-**Remote Configuration:**
-
-Configure Bob to connect to a remote Instana MCP server (e.g., deployed on IBM Code Engine):
-
-```json
-{
-  "mcpServers": {
-    "Instana MCP Server": {
-      "command": "npx",
-      "args": [
-        "mcp-remote", "https://app-instana-750.1zetetanw8ul.us-east.codeengine.appdomain.cloud/mcp/",
-        "--allow-http",
-        "--header", "instana-base-url: https://your-instana-instance.instana.io",
-        "--header", "instana-api-token: your_instana_api_token"
-      ]
-    }
-  }
-}
-```
-
 **Note:** To use npx, we recommend first installing NVM (Node Version Manager), then using it to install Node.js.
 Installation instructions are available at: https://nodejs.org/en/download
 
 **Step 3: Test the Connection**
 
-Restart Bob IDE. You should now see Instana MCP Server available in the Bob interface.
+Restart Claude Desktop. You should now see Instana MCP Server in the Claude Desktop interface as shown below:
 
-You can now run queries in Bob:
+![](./images/claudeTools.png)
+
+You can now run queries in Claude Desktop:
 
 ```
 get me all endpoints from Instana
 ```
+![](./images/claudeResponse.png)
 
 #### Stdio Mode
 
