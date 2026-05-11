@@ -33,12 +33,15 @@
     - [Claude Desktop](#claude-desktop)
       - [Streamable HTTP Mode](#streamable-http-mode)
       - [Stdio Mode](#stdio-mode)
+    - [Bob IDE](#bob-ide)
+      - [Streamable HTTP Mode](#streamable-http-mode-1)
+      - [Stdio Mode](#stdio-mode-1)
     - [Kiro Setup](#kiro-setup)
       - [Streamable HTTP Mode (Recommended for Kiro)](#streamable-http-mode-recommended-for-kiro)
-      - [Stdio Mode](#stdio-mode-1)
-    - [GitHub Copilot](#github-copilot)
-      - [Streamable HTTP Mode](#streamable-http-mode-1)
       - [Stdio Mode](#stdio-mode-2)
+    - [GitHub Copilot](#github-copilot)
+      - [Streamable HTTP Mode](#streamable-http-mode-2)
+      - [Stdio Mode](#stdio-mode-3)
     - [Mistral AI](#mistral-ai)
   - [Supported Features](#supported-features)
   - [Available Tools](#available-tools)
@@ -52,7 +55,7 @@
     - [Docker Architecture](#docker-architecture)
       - [**pyproject.toml**](#pyprojecttoml)
     - [Building the Docker Image](#building-the-docker-image)
-      - [**Prerequisites**](#prerequisites)
+      - [**Prerequisites**](#prerequisites-1)
       - [**Build Command**](#build-command)
   - [Troubleshooting](#troubleshooting)
     - [**Docker Issues**](#docker-issues)
@@ -573,6 +576,163 @@ get me all endpoints from Instana
   }
 }
 ```
+
+### Bob IDE
+
+Bob is IBM's AI-powered IDE that natively supports MCP integration. Bob provides a seamless development experience with built-in AI assistance and observability tools.
+
+Configure Bob by editing the configuration file:
+
+**File Locations:**
+- **macOS**: `~/Library/Application Support/Bob/bob_config.json`
+- **Windows**: `%APPDATA%\Bob\bob_config.json`
+- **Linux**: `~/.config/Bob/bob_config.json`
+
+For more information about Bob, visit: https://bob.ibm.com/
+
+#### Streamable HTTP Mode
+
+The Streamable HTTP mode provides a REST API interface for MCP communication using JSON-RPC over HTTP.
+
+**Step 1: Start the MCP Server in Streamable HTTP Mode**
+
+Before configuring Bob, you need to start the MCP server in Streamable HTTP mode. Please refer to the [Starting the Local MCP Server](#starting-the-local-mcp-server) section for detailed instructions.
+
+**Step 2: Configure Bob**
+
+**Local Configuration:**
+
+Configure Bob to connect to your local Instana MCP server:
+
+```json
+{
+  "mcpServers": {
+    "Instana MCP Server": {
+      "command": "npx",
+      "args": [
+        "mcp-remote", "http://0.0.0.0:8080/mcp/",
+        "--allow-http",
+        "--header", "instana-base-url: https://your-instana-instance.instana.io",
+        "--header", "instana-api-token: your_instana_api_token"
+      ]
+    }
+  }
+}
+```
+
+**Remote Configuration:**
+
+Configure Bob to connect to a remote Instana MCP server (e.g., deployed on IBM Code Engine):
+
+```json
+{
+  "mcpServers": {
+    "Instana MCP Server": {
+      "command": "npx",
+      "args": [
+        "mcp-remote", "https://app-instana-750.1zetetanw8ul.us-east.codeengine.appdomain.cloud/mcp/",
+        "--allow-http",
+        "--header", "instana-base-url: https://your-instana-instance.instana.io",
+        "--header", "instana-api-token: your_instana_api_token"
+      ]
+    }
+  }
+}
+```
+
+**Note:** To use npx, we recommend first installing NVM (Node Version Manager), then using it to install Node.js.
+Installation instructions are available at: https://nodejs.org/en/download
+
+**Step 3: Test the Connection**
+
+Restart Bob IDE. You should now see Instana MCP Server available in the Bob interface.
+
+You can now run queries in Bob:
+
+```
+get me all endpoints from Instana
+```
+
+#### Stdio Mode
+
+**Configuration using CLI (PyPI Installation - Recommended):**
+
+**Option 1: Using environment variables in config:**
+```json
+{
+  "mcpServers": {
+    "Instana MCP Server": {
+      "command": "mcp-instana",
+      "args": ["--transport", "stdio"],
+      "env": {
+        "INSTANA_BASE_URL": "https://your-instana-instance.instana.io",
+        "INSTANA_API_TOKEN": "your_instana_api_token"
+      }
+    }
+  }
+}
+```
+
+**Option 2: Using --env flag (alternative method):**
+```json
+{
+  "mcpServers": {
+    "Instana MCP Server": {
+      "command": "mcp-instana",
+      "args": [
+        "--transport", "stdio",
+        "--env", "INSTANA_BASE_URL=https://your-instana-instance.instana.io",
+        "--env", "INSTANA_API_TOKEN=your_instana_api_token"
+      ]
+    }
+  }
+}
+```
+
+**Note:** If you encounter "command not found" errors, use the full path to mcp-instana. Find it with `which mcp-instana` and use that path instead.
+
+**Configuration using Development Installation:**
+
+**Option 1: Using environment variables in config:**
+```json
+{
+  "mcpServers": {
+    "Instana MCP Server": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "<path-to-mcp-instana-folder>",
+        "run",
+        "src/core/server.py"
+      ],
+      "env": {
+        "INSTANA_BASE_URL": "https://your-instana-instance.instana.io",
+        "INSTANA_API_TOKEN": "your_instana_api_token"
+      }
+    }
+  }
+}
+```
+
+**Option 2: Using --env flag (alternative method):**
+```json
+{
+  "mcpServers": {
+    "Instana MCP Server": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "<path-to-mcp-instana-folder>",
+        "run",
+        "src/core/server.py",
+        "--env", "INSTANA_BASE_URL=https://your-instana-instance.instana.io",
+        "--env", "INSTANA_API_TOKEN=your_instana_api_token"
+      ]
+    }
+  }
+}
+```
+
 ### Kiro Setup
 
 Kiro is an agentic IDE, not an extension that can be downloaded into VS Code or some other IDE.
