@@ -31,6 +31,7 @@
     - [Common Startup Issues](#common-startup-issues)
   - [Setup and Usage](#setup-and-usage)
     - [Bob IDE](#bob-ide)
+      - [MCP Configuration Scopes](#mcp-configuration-scopes)
       - [Streamable HTTP Mode](#streamable-http-mode)
       - [Stdio Mode](#stdio-mode)
     - [Claude Desktop](#claude-desktop)
@@ -447,14 +448,32 @@ uv sync
 
 Bob is IBM's AI-powered IDE that natively supports MCP integration. Bob provides a seamless development experience with built-in AI assistance and observability tools.
 
-Configure Bob by editing the configuration file:
+#### MCP Configuration Scopes
+
+Bob supports two levels of MCP configuration, allowing you to choose the scope that best fits your use case:
+
+**1. Global Configuration (User-Level)**
+
+Global configuration applies MCP servers across all projects for the current user. This is ideal when you want the same MCP servers available in every project you work on.
 
 **File Locations:**
 - **macOS**: `~/Library/Application Support/Bob/bob_config.json`
 - **Windows**: `%APPDATA%\Bob\bob_config.json`
 - **Linux**: `~/.config/Bob/bob_config.json`
 
-For more information about Bob, visit: https://bob.ibm.com/
+**2. Project Configuration (Project-Level)**
+
+Project configuration applies MCP servers only to a specific project. This is useful when different projects require different MCP server configurations or when you want to share MCP settings with your team via version control.
+
+**File Location:**
+- `.bob/bob_config.json` in your project root directory
+
+**Choosing Between Global and Project Configuration:**
+- Use **global configuration** for MCP servers you want available across all your projects
+- Use **project configuration** for project-specific MCP servers or to share configurations with your team
+- Both configurations can coexist - project-level settings take precedence over global settings for the same server name
+
+For more information about Bob and MCP configuration, visit: https://bob.ibm.com/docs/ide/configuration/mcp/mcp-in-bob
 
 #### Streamable HTTP Mode
 
